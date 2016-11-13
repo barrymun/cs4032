@@ -21,28 +21,41 @@
     You should print out the server response to the terminal. 
 */
 
+/*
+ To start the local server:     php -S localhost:8000 -t .
+ VIEW HERE:                     http://localhost:8000/server-echo.php
+*/
+
 //      ini_set('display_errors', 'On');
 //      error_reporting(E_ALL | E_STRICT);
-      if(isset($_GET['source'])) {
-        if ($_GET['source'] == "raw")
-           echo file_get_contents(basename($_SERVER['PHP_SELF']));
-        else
-           echo "<pre>" . htmlspecialchars(file_get_contents(basename($_SERVER['PHP_SELF']))) . "</pre>";
-      } else if (isset($_GET['message'])){
-        echo strtoupper( htmlspecialchars($_GET['message'])) . '\n';
-      } else {
+
+
+  if(isset($_GET['source'])) {
+    if ($_GET['source'] == "raw")
+      echo file_get_contents(basename($_SERVER['PHP_SELF']));
+
+    
+
+    else
+      echo "<pre>" . htmlspecialchars(file_get_contents(basename($_SERVER['PHP_SELF']))) . "</pre>";
+  }
+  else if (isset($_GET['message'])){
+    echo strtoupper( htmlspecialchars($_GET['message'])) . '\n';
+  } else {
 ?>
-      <html>
-        <head>
-          <title>Whoops: no message for me?</title>
-        </head>
-        <body>
-          <h1>Whoops: no message for me?</h1>
-          <p>If you are seeing this page then you have managed to call the echo server without
-          sending a parameter. Well done on getting this far, but now try to work out how to send
-          a text string to be converted to uppercase</p>
-        </body>
-      </html>
+
+  <html>
+    <head>
+      <title>Whoops: no message for me?</title>
+    </head>
+    <body>
+      <h1>Whoops: no message for me?</h1>
+      <p>If you are seeing this page then you have managed to call the echo server without
+      sending a parameter. Well done on getting this far, but now try to work out how to send
+      a text string to be converted to uppercase</p>
+    </body>
+  </html>
+
 <?php
       }
 ?>
