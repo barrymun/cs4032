@@ -16,7 +16,7 @@ BUFFER_SIZE = 1024
 try:
     
     # Send data
-    message_query = "i love neil"
+    message_query = "upper case here"
     message = "GET /server-echo.php?message=%s HTTP/1.0\r\n\r\n" % urllib.quote(message_query)
     print >>sys.stderr, 'sending "%s"' % message
     sock.sendall(message)
