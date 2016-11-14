@@ -27,10 +27,10 @@ def handleClient(conn,addr):
     openCon = True
     while openCon:
         data = conn.recv(1024)
-        if "MESSAGE" in data:
+        if "HELO text" in data:
             print "message recieved. Number of threads %d" % (numberofThreads)
-            conn.send("%sIP:%s\nPort:%d\nCOMPLETE" %(data,address,port))
-        elif data == "END_COMMUNICATION\n":
+            conn.send("%sIP:%s\nPort:%d\nStudentID:13327106\n" %(data,address,port))
+        elif data == "KILL_SERVICE\n":
             print "terminating now ..."
             sock.close()
             print "Socket closed"

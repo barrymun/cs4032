@@ -5,10 +5,10 @@ import os
 msgType = int(sys.argv[1])
 
 if msgType == 1:
-	msg = "MESSAGE\n"
+	msg = "HELO text\n"
 
 elif msgType == 2:
-	msg = "END_COMMUNICATION\n"
+	msg = "KILL_SERVICE\n"
 
 else:
 	print >>sys.stderr, 'Invalid arguements'
