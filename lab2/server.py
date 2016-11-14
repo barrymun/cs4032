@@ -23,32 +23,24 @@ activeConnection = True
 monitorThreads = []
 
 
-def sortThreads():
-        i = 0
-        print "TEST"
-        for thread in monitorThreads:
-                if(not thread.isAlive()):
-                        monitorThreads.pop(i)
-                        global totalThreads
-                        totalThreads = totalThreads - 1
-                i = i + 1
-        monitorThreads.sort()
 
-
-def handleClient(conn,addr):
-    openCon = True
-    while openCon:
+def handleClientConnections(conn,addr):
+    checkConnection = True
+    while checkConnection:
         data = conn.recv(1024)
+        #check if the required text appears in the message
         if "HELO BASE_TEST" in data:
+        		#confirm that the message has been received
             print "message recieved, number of threads: %d" % (totalThreads)
             conn.send("%sIP:%s\nPort:%d\nStudentID:%s" %(data,address,port,student_id))
+        #check for alternative message type used to end the connection
         elif data == "KILL_SERVICE\n":
             print "terminating now ..."
             sock.close()
             print "Socket closed, connection terminated"
             os._exit(1)
         elif not data:
-            openCon = False
+            checkConnection = False
         else:
             print data
 
@@ -60,7 +52,7 @@ sock.listen(5)
 while activeConnection:
     if totalThreads < maxThreadCount:
         conn,addr = sock.accept()
-        monitorThreads.append(threading.Thread(target = handleClient, args =(conn,addr,)))
+        monitorThreads.append(threading.Thread(target = handleClientConnections, args =(conn,addr,)))
         monitorThreads[totalThreads].start()
         global totalThreads
         totalThreads = totalThreads + 1
