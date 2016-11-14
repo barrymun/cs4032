@@ -1,54 +1,70 @@
+
 import socket
 import threading
 import os
 import sys
 
 
-max = 10
-address = "localhost"
+#can be set to any arbitrary value, 5 chosen for the purposes of testing only
+maxThreadCount = 5
+#server machine address hard coded here (this is the IP used for the submission nad for tests)
+address = "134.226.44.157"
+#student id
+student_id = "13327106"
+#get the port number
 port = int(sys.argv[1])
+#socket used for the connection
 sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-numberofThreads = 0
-active = True
-threadpool = []
+#total number of threads in use
+totalThreads = 0
+#check if connection is active
+activeConnection = True
+#array used to monitor the threads
+monitorThreads = []
 
-def sortThreadPool():
+
+def sortThreads():
         i = 0
         print "TEST"
-        for thread in threadpool:
+        for thread in monitorThreads:
                 if(not thread.isAlive()):
-                        threadpool.pop(i)
-                        global numberofThreads
-                        numberofThreads = numberofThreads - 1
+                        monitorThreads.pop(i)
+                        global totalThreads
+                        totalThreads = totalThreads - 1
                 i = i + 1
-        threadpool.sort()
+        monitorThreads.sort()
+
 
 def handleClient(conn,addr):
     openCon = True
     while openCon:
         data = conn.recv(1024)
-        if "HELO text" in data:
-            print "message recieved. Number of threads %d" % (numberofThreads)
-            conn.send("%sIP:%s\nPort:%d\nStudentID:13327106\n" %(data,address,port))
+        if "HELO BASE_TEST" in data:
+            print "message recieved, number of threads: %d" % (totalThreads)
+            conn.send("%sIP:%s\nPort:%d\nStudentID:%s" %(data,address,port,student_id))
         elif data == "KILL_SERVICE\n":
             print "terminating now ..."
             sock.close()
-            print "Socket closed"
+            print "Socket closed, connection terminated"
             os._exit(1)
         elif not data:
             openCon = False
         else:
             print data
 
+
 sock.bind((address,port))
-print "Socket created at IP:%s and port:%d, now listening for clients" %(address,port)
+print "Socket generated at IP:%s and port:%d, listening for client connections" %(address,port)
 sock.listen(5)
-while active:
-    if numberofThreads < max:
+
+while activeConnection:
+    if totalThreads < maxThreadCount:
         conn,addr = sock.accept()
-        threadpool.append(threading.Thread(target = handleClient, args =(conn,addr,)))
-        threadpool[numberofThreads].start()
-        global numberofThreads
-        numberofThreads = numberofThreads + 1
+        monitorThreads.append(threading.Thread(target = handleClient, args =(conn,addr,)))
+        monitorThreads[totalThreads].start()
+        global totalThreads
+        totalThreads = totalThreads + 1
     else:
-        print "There are no free threads"
+        print "no available threads at this moment"
+
+
