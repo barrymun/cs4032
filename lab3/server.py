@@ -24,24 +24,24 @@ threadPool = []
 
 
 def handleClientConnections(conn,addr):
-    checkConnection = True
-    while checkConnection:
-        data = conn.recv(1024)
-        #check if the required text appears in the message
-        if "HELO BASE_TEST" in data:
-        		#confirm that the message has been received
-            print "message recieved, number of threads: %d" % (totalThreads)
-            conn.send("%sIP:%s\nPort:%d\nStudentID:%s" %(data,address,port,student_id))
-        #check for alternative message type used to end the connection
-        elif data == "KILL_SERVICE\n":
-            print "terminating now ..."
-            sock.close()
-            print "Socket closed, connection terminated"
-            os._exit(1)
-        elif not data:
-            checkConnection = False
-        else:
-            print data
+  checkConnection = True
+  while checkConnection:
+    data = conn.recv(1024)
+    #check if the required text appears in the message
+    if "HELO BASE_TEST" in data:
+  		#confirm that the message has been received
+      print "message recieved, number of threads: %d" % (totalThreads)
+      conn.send("%sIP:%s\nPort:%d\nStudentID:%s" %(data,address,port,student_id))
+    #check for alternative message type used to end the connection
+    elif data == "KILL_SERVICE\n":
+      print "terminating now ..."
+      sock.close()
+      print "Socket closed, connection terminated"
+      os._exit(1)
+    elif not data:
+      checkConnection = False
+    else:
+      print data
 
 
 sock.bind((address,port))
@@ -49,12 +49,12 @@ print "Socket generated at IP:%s and port:%d, listening for client connections" 
 sock.listen(5)
 
 while activeConnection:
-    if totalThreads < maxThreadCount:
-        conn,addr = sock.accept()
-        threadPool.append(threading.Thread(target = handleClientConnections, args =(conn,addr,)))
-        threadPool[totalThreads].start()
-        global totalThreads
-        totalThreads = totalThreads + 1
-    else:
-        print "no available threads at this moment"
+  if totalThreads < maxThreadCount:
+    conn,addr = sock.accept()
+    threadPool.append(threading.Thread(target = handleClientConnections, args =(conn,addr,)))
+    threadPool[totalThreads].start()
+    global totalThreads
+    totalThreads = totalThreads + 1
+  else:
+    print "no available threads at this moment"
 

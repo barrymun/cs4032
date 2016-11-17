@@ -3,13 +3,24 @@ import socket
 import sys
 import os
 
+
 msgType = int(sys.argv[1])
+room_ref = str(sys.argv[2])
+address = str(sys.argv[3])
+port = int(sys.argv[4])
+client_name = str(sys.argv[5])
+
 
 if msgType == 1:
-	msg = "HELO BASE_TEST\n"
+	msg = ("JOIN_CHATROOM: %s\n" +
+		"CLIENT_IP: %s\n" +
+		"PORT: %d\n" +
+		"CLIENT_NAME: %s" %(room_ref,address,port,client_name))
 
 elif msgType == 2:
-	msg = "KILL_SERVICE\n"
+	msg = ("LEAVE_CHATROOM: %s\n" +
+		"JOIN_ID: %d\n" +
+		"CLIENT_NAME: %s" %(room_ref,join_id,client_name))
 
 else:
 	print >>sys.stderr, 'Invalid arguements, please edit msg contents'
@@ -19,8 +30,9 @@ def main():
 	sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
 	print >>sys.stderr, 'starting up'
-	# connection port set to 8000 fot the purposes of testing here
-	sock.connect(("", 8000))
+	# connection port set to 8000 for the purposes of testing here
+	# altered to "port"
+	sock.connect(("", port))
 	connected = True
 	
 	try:
