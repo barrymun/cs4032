@@ -1,4 +1,4 @@
-Run "./start.sh" to run the python server on port 800
+Run "./start.sh" to run the python server on port 8000
 
 The port is already specified in the script
 
