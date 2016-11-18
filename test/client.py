@@ -13,10 +13,10 @@ join_id = 0
 room_ref = 0
 the_msg = "insert the message here"
 
-join_msg = ("JOIN_CHATROOM: %s\nCLIENT_IP: %s\nPORT: %d\nCLIENT_NAME: %s\n\n" %(chat_id,address,port,client_name))
-exit_msg = ("LEAVE_CHATROOM: %s\nJOIN_ID: %d\nCLIENT_NAME: %s\n\n" %(chat_id,join_id,client_name))
-disconnect_msg = ("DISCONNECT: %s\nPORT: %d\nCLIENT_NAME: %s\n\n" %(address,port,client_name))
-#chat_msg = ("CHAT: %d\nJOIN_ID: %d\nCLIENT_NAME: %s\nMESSAGE: %s\n\n" %(room_ref,join_id,client_name,the_msg))
+join_msg = ("JOIN_CHATROOM: %s\nCLIENT_IP: %s\nPORT: %d\nCLIENT_NAME: %s\r\n\r\n" %(chat_id,address,port,client_name))
+exit_msg = ("LEAVE_CHATROOM: %s\nJOIN_ID: %d\nCLIENT_NAME: %s\r\n\r\n" %(chat_id,join_id,client_name))
+disconnect_msg = ("DISCONNECT: %s\nPORT: %d\nCLIENT_NAME: %s\r\n\r\n" %(address,port,client_name))
+#chat_msg = ("CHAT: %d\nJOIN_ID: %d\nCLIENT_NAME: %s\nMESSAGE: %s\r\n\r\n" %(room_ref,join_id,client_name,the_msg))
 
 
 def main():
@@ -32,7 +32,7 @@ def main():
 
 	while user_msg != "/leave":
 	  user_msg = raw_input("type your message: ")
-	  chat_msg = ("CHAT: %d\nJOIN_ID: %d\nCLIENT_NAME: %s\nMESSAGE: %s\n\n" %(room_ref,join_id,client_name,user_msg))
+	  chat_msg = ("CHAT: %d\nJOIN_ID: %d\nCLIENT_NAME: %s\nMESSAGE: %s\r\n\r\n" %(room_ref,join_id,client_name,user_msg))
 	  if user_msg != "/leave":
 	  	client_socket.send(chat_msg)
 	  	while "CHAT" in client_socket.recv(2048):
