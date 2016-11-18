@@ -7,7 +7,7 @@ import os
 address = "localhost"
 port = 8220
 
-chat_id = "dank"
+chat_id = "room1"
 client_name = str(raw_input("Provide your nickname: "))
 join_id = 0
 room_ref = 0

@@ -26,7 +26,7 @@ server_socket.listen(5)
 
 def handleClientConnections(conn,address):
 	checkConnection = True
-	chat_id = "dank"
+	chat_id = "room1"
 	room_ref = 0
 	join_id = 0
 	err_code = 1337
