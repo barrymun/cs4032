@@ -17,6 +17,7 @@ threadPool = []
 host = '134.226.32.10'
 port = 8220
 address = (host, port)
+student_id = "13327106"
 
 server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 server_socket.bind(address)
@@ -39,7 +40,7 @@ def handleClientConnections(conn,address):
 		if "HELO BASE_TEST" in data:
 			#confirm that the message has been received
 			print "message recieved, number of threads: %d" % (totalThreads)
-  		conn.send("%sIP:%s\nPort:%d\nStudentID:%s" %(data,address,port,student_id))
+			conn.send("%sIP:%s\nPort:%d\nStudentID:%s" %(data,host,port,student_id))
 
 		elif "JOIN_CHATROOM" in data:
 			print data
