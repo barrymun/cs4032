@@ -29,9 +29,9 @@ def handleClientConnections(conn,address):
 	chat_id = "room1"
 	room_ref = 0
 	join_id = 0
-	err_code = 1337
 	client_name = "client"
 	
+	err_code = 1337
 	err_desc = "error"
 	msg = "hello"
 
@@ -43,11 +43,11 @@ def handleClientConnections(conn,address):
 			print "message recieved, number of threads: %d" % (totalThreads)
 			conn.send("%sIP:%s\nPort:%d\nStudentID:%s" %(data,host,port,student_id))
 
-		elif "JOIN_CHATROOM" in data:
+		elif "JOIN" in data:
 			print data
 			conn.send("JOINED_CHATROOM: %s\nSERVER_IP: %s\nPORT: %d\nROOM_REF: %d\nJOIN_ID: %d\r\n\r\n" %(chat_id,host,port,room_ref,join_id))
 
-		elif "LEAVE_CHATROOM" in data:
+		elif "LEAVE" in data:
 			print data
 			conn.send("LEFT_CHATROOM: %s\nJOIN_ID: %d\r\n\r\n" %(chat_id,join_id))
 			#checkConnection = False
@@ -66,7 +66,7 @@ def handleClientConnections(conn,address):
 			sys.exit(0)
 
 		else:
-			print "Invalid message"
+			conn.send("ERROR_CODE: %d\nERROR_DESCRIPTION: %s\r\n\r\n" %(err_code,err_desc))
 			break
 
 	activeConnection = False
