@@ -54,7 +54,7 @@ def handleClientConnections(conn,address):
 
 		elif "CHAT" in data:
 			print data
-			conn.send("CHAT: %d\nCLIENT_NAME: %s\nMESSAGE: %s\r\n\r\n" %(room_ref,client_name,msg))
+			conn.send("CHAT: %s\nCLIENT_NAME: %s\nMESSAGE: %s\r\n\r\n" %(chat_id,client_name,msg))
 
 		elif "DISCONNECT" in data:
 			conn.close()
