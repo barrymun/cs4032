@@ -61,7 +61,7 @@ def handleClientConnections(conn,address):
 
 		elif "KILL_SERVICE" in data:
 			print "terminating now ..."
-			sock.close()
+			server_socket.close()
 			print "Socket closed, connection terminated"
 			os._exit(1)
 
