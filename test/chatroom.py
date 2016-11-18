@@ -1,52 +1,29 @@
-import threading
-import socket
 
 class ChatRoom:
 
-	def __init__(self, name, identifier, host='localhost', port=8080):
+	def __init__(self, name, reference):
+		users = []
 		self.name = name
-		self.identifier = identifier
-		self.observers = {}
-		self.host = host
-		self.port = port
+		self.reference = reference
 
-	def register_observer(self, observer):
-		worker_identifier = len(self.observers)
-		self.observers[worker_identifier] = observer
+	def add_user(username, socket):
+		if not socket in username:
+			users[socket] = username
+		socket.send("%s has joined this chatroom." %(username))
 
-		observer.broadcast(
-			"JOINED_CHATROOM: {0}\nSERVER_IP: {1}\nPORT: {2}\nROOM_REF: {3}\nJOIN_ID: {4}\n".format(
-				self.get_name(), 
-				self.get_host(), 
-				self.get_port(), 
-				self.get_identifier(), 
-				worker_identifier))
-		return worker_identifier
+	def remove_user(username, socket):
+		socket.send("%s has left this chatroom." %(username))
+		users.delete(socket)
+		for i in users:
+			if i == socket:
+				users.pop(i)
 
-	def deregister_observer(self, observer):
-		del self.observers[observer.get_chat_room_join_identifier()]
+	def disconnect_user(socket):
+		if socket in users:
+			remove_user(users[socket], socket)
 
-	def get_name(self):
-		return self.name
-
-	def get_host(self):
-		return self.host 
-
-	def get_port(self):
-		return self.port
-
-	def get_identifier(self):
-		return self.identifier
-
-	def relay(self, message_content, relayer):
-		print "relaying message"
-		for key in self.observers:
-			# request that they relay the message to listening client
-			observer = self.observers[key]
-			message_prefix = ""
-			if observer == relayer:
-				message_prefix = "Me"
-			else:
-				message_prefix = relayer.client_name
-
-			observer.broadcast("{0}: {1}".format(message_prefix, message_content))
+	def send_message(message, from_socket):
+		username = users[from_socket]
+		for user in users:
+			msg = ("CHAT: %s\nCLIENT_NAME: %s\nMESSAGE: %s\n\n" %(reference,username,message))
+			user.write(msg)
