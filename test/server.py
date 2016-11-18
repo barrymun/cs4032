@@ -63,7 +63,7 @@ def handleClientConnections(conn,address):
 			print "terminating now ..."
 			server_socket.close()
 			print "Socket closed, connection terminated"
-			os._exit(1)
+			sys.exit(0)
 
 		else:
 			conn.send("ERROR_CODE: %d\nERROR_DESCRIPTION: %s\n\n" %(err_code,err_desc))
