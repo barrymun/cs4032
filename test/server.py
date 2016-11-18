@@ -38,7 +38,7 @@ def handleClientConnections(conn,address):
 		data = conn.recv(2048);
 		if "HELO BASE_TEST" in data:
 			#confirm that the message has been received
-  		print "message recieved, number of threads: %d" % (totalThreads)
+			print "message recieved, number of threads: %d" % (totalThreads)
   		conn.send("%sIP:%s\nPort:%d\nStudentID:%s" %(data,address,port,student_id))
 
 		elif "JOIN_CHATROOM" in data:
