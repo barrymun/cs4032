@@ -37,11 +37,11 @@ def handleClientConnections(conn,address):
 	while checkConnection:
 		data = conn.recv(2048);
 		if "HELO BASE_TEST" in data:
-  		#confirm that the message has been received
-      print "message recieved, number of threads: %d" % (totalThreads)
-      conn.send("%sIP:%s\nPort:%d\nStudentID:%s" %(data,address,port,student_id))
+			#confirm that the message has been received
+  		print "message recieved, number of threads: %d" % (totalThreads)
+  		conn.send("%sIP:%s\nPort:%d\nStudentID:%s" %(data,address,port,student_id))
 
-    elif "JOIN_CHATROOM" in data:
+		elif "JOIN_CHATROOM" in data:
 			print data
 			conn.send("JOINED_CHATROOM: %s\nSERVER_IP: %s\nPORT: %d\nROOM_REF: %d\nJOIN_ID: %d\n\n" %(chat_id,host,port,room_ref,join_id))
 
