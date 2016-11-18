@@ -37,6 +37,7 @@ def handleClientConnections(conn,address):
 
 	while checkConnection:
 		data = conn.recv(2048);
+		
 		if "HELO BASE_TEST" in data:
 			#confirm that the message has been received
 			print "message recieved, number of threads: %d" % (totalThreads)
@@ -57,6 +58,12 @@ def handleClientConnections(conn,address):
 
 		elif "DISCONNECT" in data:
 			conn.close()
+
+		elif "KILL_SERVICE" in data:
+			print "terminating now ..."
+      sock.close()
+      print "Socket closed, connection terminated"
+      os._exit(1)
 
 		else:
 			conn.send("ERROR_CODE: %d\nERROR_DESCRIPTION: %s\n\n" %(err_code,err_desc))
