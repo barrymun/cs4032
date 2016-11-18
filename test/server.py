@@ -13,7 +13,8 @@ activeConnection = True
 #array used to keep track of the threads
 threadPool = []
 
-host = 'localhost'
+#host = 'localhost'
+host = '134.226.32.10'
 port = 8220
 address = (host, port)
 
@@ -35,18 +36,27 @@ def handleClientConnections(conn,address):
 
 	while checkConnection:
 		data = conn.recv(2048);
-		if "LEAVE_CHATROOM" in data:
+		if "HELO BASE_TEST" in data:
+  		#confirm that the message has been received
+      print "message recieved, number of threads: %d" % (totalThreads)
+      conn.send("%sIP:%s\nPort:%d\nStudentID:%s" %(data,address,port,student_id))
+
+    elif "JOIN_CHATROOM" in data:
+			print data
+			conn.send("JOINED_CHATROOM: %s\nSERVER_IP: %s\nPORT: %d\nROOM_REF: %d\nJOIN_ID: %d\n\n" %(chat_id,host,port,room_ref,join_id))
+
+		elif "LEAVE_CHATROOM" in data:
 			print data
 			conn.send("LEFT_CHATROOM: %s\nJOIN_ID: %d\n\n" %(chat_id,join_id))
 			checkConnection = False
-		elif "JOIN_CHATROOM" in data:
-			print data
-			conn.send("JOINED_CHATROOM: %s\nSERVER_IP: %s\nPORT: %d\nROOM_REF: %d\nJOIN_ID: %d\n\n" %(chat_id,host,port,room_ref,join_id))
+
 		elif "CHAT" in data:
 			print data
 			conn.send("CHAT: %d\nCLIENT_NAME: %s\nMESSAGE: %s\n\n" %(room_ref,client_name,msg))
+
 		elif "DISCONNECT" in data:
 			conn.close()
+
 		else:
 			conn.send("ERROR_CODE: %d\nERROR_DESCRIPTION: %s\n\n" %(err_code,err_desc))
 
