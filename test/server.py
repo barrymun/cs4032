@@ -3,6 +3,7 @@ import socket
 import threading
 import os
 import sys
+from chatroom import ChatRoom
 
 #can be set to any arbitrary value, 5 chosen for the purposes of testing only
 maxThreadCount = 5
@@ -27,10 +28,11 @@ server_socket.listen(5)
 def handleClientConnections(conn,address):
 	checkConnection = True
 	chat_id = "room1"
-	room_ref = 0
+	room_ref = 1
+	chat_room = ChatRoom(chat_id,room_ref,host,port)
+	
 	join_id = 0
 	err_code = 1337
-	client_name = "client"
 	
 	err_desc = "error"
 	msg = "hello"
@@ -45,19 +47,30 @@ def handleClientConnections(conn,address):
 
 		elif "JOIN_CHATROOM" in data:
 			print data
-			conn.send("JOINED_CHATROOM: %s\nSERVER_IP: %s\nPORT: %d\nROOM_REF: %d\nJOIN_ID: %d\r\n\r\n" %(chat_id,host,port,room_ref,join_id))
+			split_data = data.split('\n')
+			val = split_data[3]
+			client_name = val.split(':',1)[-1]
+			chat_room.join_chatroom(client_name,conn)
 
 		elif "LEAVE_CHATROOM" in data:
 			print data
-			conn.send("LEFT_CHATROOM: %s\nJOIN_ID: %d\r\n\r\n" %(chat_id,join_id))
-			#checkConnection = False
+			split_data = data.split('\n')
+			val = split_data[2]
+			client_name = val.split(':',1)[-1]
+			chat_room.leave_chatroom(client_name,conn)
 
 		elif "CHAT" in data:
 			print data
-			conn.send("CHAT: %d\nCLIENT_NAME: %s\nMESSAGE: %s\r\n\r\n" %(room_ref,client_name,msg))
+			split_data = data.split('\n')
+			val = split_data[2]
+			client_name = val.split(':',1)[-1]
+			val2 = split_data[3]
+			msg = val2.split(':',1)[-1]
+			chat_room.send_message(client_name,msg,conn)
 
 		elif "DISCONNECT" in data:
-			conn.close()
+			server_socket.close()
+			sys.exit(0)
 
 		elif "KILL_SERVICE" in data:
 			print "terminating now ..."
@@ -67,6 +80,7 @@ def handleClientConnections(conn,address):
 
 		else:
 			print "Invalid message"
+			print data
 			break
 
 	activeConnection = False
