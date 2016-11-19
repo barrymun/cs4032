@@ -39,9 +39,8 @@ class ChatRoom:
 			if join_id in chat_rooms[room_ref]:
 				message = ("%s has left the chatroom." %(user))
 				broadcast(room_ref, message)
-				if join_id in rooms[room_id]:
+				if join_id in chat_rooms[room_id]:
 					del chat_rooms[room_ref][join_id]
-		leave_chatroom(user,chat_rooms,room_ref,join_id,conn)
 
 	def send_message(self,room_ref,join_id,user,message,chat_rooms,conn):
 		message = ("%s: %s" %(user,message))
