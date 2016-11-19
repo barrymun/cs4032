@@ -13,7 +13,7 @@ class ChatRoom:
 		if not user in self.users_in_room:
 			self.users_in_room.append(user)
 		print "%s has joined chatroom: %s." %(user,self.name)
-		conn.send("JOINED_CHATROOM:%s\nSERVER_IP:%s\nPORT:%d\nROOM_REF:\n%dJOIN_ID:%d\n\n"
+		conn.send("JOINED_CHATROOM:%s\nSERVER_IP:%s\nPORT:%d\nROOM_REF:%d\nJOIN_ID:%d\n\n"
 			%(self.name,self.host,self.port,self.reference,join_id))
 
 	def leave_chatroom(self,user,conn):

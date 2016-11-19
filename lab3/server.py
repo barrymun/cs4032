@@ -3,18 +3,10 @@ import socket
 import threading
 import os
 import sys
-
+from chatroom import ChatRoom
 
 #can be set to any arbitrary value, 5 chosen for the purposes of testing only
 maxThreadCount = 5
-#server machine address hard coded here (this is the IP used for the submission nad for tests)
-address = "134.226.44.157"
-#student id
-student_id = "13327106"
-#get the port number
-port = int(sys.argv[1])
-#socket used for the connection
-sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 #total number of threads in use
 totalThreads = 0
 #check if connection is active
@@ -22,39 +14,85 @@ activeConnection = True
 #array used to keep track of the threads
 threadPool = []
 
+#host = 'localhost'
+host = '134.226.32.10'
+port = 8220
+address = (host, port)
+student_id = "13327106"
 
-def handleClientConnections(conn,addr):
-  checkConnection = True
-  while checkConnection:
-    data = conn.recv(1024)
-    #check if the required text appears in the message
-    if "HELO BASE_TEST" in data:
-  		#confirm that the message has been received
-      print "message recieved, number of threads: %d" % (totalThreads)
-      conn.send("%sIP:%s\nPort:%d\nStudentID:%s" %(data,address,port,student_id))
-    #check for alternative message type used to end the connection
-    elif data == "KILL_SERVICE\n":
-      print "terminating now ..."
-      sock.close()
-      print "Socket closed, connection terminated"
-      os._exit(1)
-    elif not data:
-      checkConnection = False
-    else:
-      print data
+server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+server_socket.bind(address)
+server_socket.listen(5)
 
 
-sock.bind((address,port))
-print "Socket generated at IP:%s and port:%d, listening for client connections" %(address,port)
-sock.listen(5)
+def handleClientConnections(conn,address):
+	checkConnection = True
+	chat_id = "room1"
+	room_ref = 1
+	chat_room = ChatRoom(chat_id,room_ref,host,port)
+	
+	join_id = 0
+	err_code = 1337
+	
+	err_desc = "error"
+	msg = "hello"
+
+	while checkConnection:
+		data = conn.recv(2048);
+
+		if "HELO BASE_TEST" in data:
+			#confirm that the message has been received
+			print "message recieved, number of threads: %d" % (totalThreads)
+			conn.send("%sIP:%s\nPort:%d\nStudentID:%s" %(data,host,port,student_id))
+
+		elif "JOIN_CHATROOM" in data:
+			print data
+			split_data = data.split('\n')
+			val = split_data[3]
+			client_name = val.split(':',1)[-1]
+			chat_room.join_chatroom(client_name,conn)
+
+		elif "LEAVE_CHATROOM" in data:
+			print data
+			split_data = data.split('\n')
+			val = split_data[2]
+			client_name = val.split(':',1)[-1]
+			chat_room.leave_chatroom(client_name,conn)
+
+		elif "CHAT" in data:
+			print data
+			split_data = data.split('\n')
+			val = split_data[2]
+			client_name = val.split(':',1)[-1]
+			val2 = split_data[3]
+			msg = val2.split(':',1)[-1]
+			chat_room.send_message(client_name,msg,conn)
+
+		elif "DISCONNECT" in data:
+			server_socket.close()
+			sys.exit(0)
+
+		elif "KILL_SERVICE" in data:
+			print "terminating now ..."
+			server_socket.close()
+			print "Socket closed, connection terminated"
+			sys.exit(0)
+
+		else:
+			print "Invalid message"
+			print data
+			break
+
+	activeConnection = False
+	conn.close()
+
 
 while activeConnection:
   if totalThreads < maxThreadCount:
-    conn,addr = sock.accept()
-    threadPool.append(threading.Thread(target = handleClientConnections, args =(conn,addr,)))
+    conn,address = server_socket.accept()
+    threadPool.append(threading.Thread(target = handleClientConnections, args =(conn,address)))
     threadPool[totalThreads].start()
     global totalThreads
     totalThreads = totalThreads + 1
   else:
     print "no available threads at this moment"
-
