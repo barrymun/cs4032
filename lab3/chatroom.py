@@ -27,7 +27,7 @@ class ChatRoom:
 		print "%s has disconnected due to transmission error." %(user)
 		leave_chatroom(user,conn)
 
-	def send_message(self,user,message,conn):
+	def send_message(self,ref,user,message,conn):
 		if user in self.users_in_room:
-			conn.send("CHAT:%s\nCLIENT_NAME:%s\nMESSAGE:%s\n\n" %(self.reference,user,message))
+			conn.send("CHAT:%s\nCLIENT_NAME:%s\nMESSAGE:%s\n\n" %(ref,user,message))
 		print "%s: %s" %(user,message)

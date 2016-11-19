@@ -62,11 +62,14 @@ def handleClientConnections(conn,address):
 		elif "CHAT" in data:
 			print data
 			split_data = data.split('\n')
-			val = split_data[2]
-			client_name = val.split(':',1)[-1]
-			val2 = split_data[3]
-			msg = val2.split(':',1)[-1]
-			chat_room.send_message(client_name,msg,conn)
+			val = split_data[0]
+			ref = val.split(':',1)[-1]
+			split_data = data.split('\n')
+			val2 = split_data[2]
+			client_name = val2.split(':',1)[-1]
+			val3 = split_data[3]
+			msg = val3.split(':',1)[-1]
+			chat_room.send_message(ref,client_name,msg,conn)
 
 		elif "DISCONNECT" in data:
 			server_socket.close()
