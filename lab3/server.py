@@ -55,13 +55,16 @@ def handleClientConnections(conn,address):
 
 		elif "CHAT" in data:
 			split_data = data.split('\n')
-			room_ref = int(split_data[0].split(':')[1])
-			join_id = int(split_data[0].split(':')[1])
+			room_ref = split_data[0].split(':')[1]
+			join_id = split_data[0].split(':')[1]
 			client_name = split_data[2].split(':')[1]
 			message = split_data[3].split(':')[1]
 			chat_room.send_message(room_ref,join_id,client_name,message,chat_rooms,conn)
 
 		elif "DISCONNECT" in data:
+			split_data = data.split('\n')
+			client_name = split_data[2].split(':')[1]
+			disconnect_user(client_name,chat_rooms,conn)
 			checkConnection = False
 
 

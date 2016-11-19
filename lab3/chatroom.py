@@ -32,11 +32,18 @@ class ChatRoom:
 		broadcast(room_ref,join_id,user,chat_rooms,message,conn)
 		del chat_rooms[room_ref][join_id]
 
-	def disconnect_user(self,user,conn):
+	def disconnect_user(self,user,chat_rooms,conn):
+		join_id = int(md5(user).hexdigest(), 16)
 		print "%s has disconnected due to transmission error." %(user)
-		leave_chatroom(user,conn)
+		for room_ref in chat_rooms.keys():
+			if join_id in chat_rooms[room_ref]:
+				message = ("%s has left the chatroom." %(user))
+				broadcast(room_ref, message)
+				if join_id in rooms[room_id]:
+					del chat_rooms[room_ref][join_id]
+		leave_chatroom(user,chat_rooms,room_ref,join_id,conn)
 
 	def send_message(self,room_ref,join_id,user,message,chat_rooms,conn):
-		conn.send("CHAT:%s\nCLIENT_NAME:%s\nMESSAGE:%s\n\n" %(str(room_ref),user,message))
 		message = ("%s: %s" %(user,message))
+		conn.send("CHAT:%s\nCLIENT_NAME:%s\nMESSAGE:%s\n\n" %(str(room_ref),user,message))
 		broadcast(room_ref,join_id,user,chat_rooms,message,conn)
