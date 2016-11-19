@@ -1,38 +1,43 @@
 
+import hashlib
+
+def broadcast(room_ref,join_id,user,chat_rooms,message,conn):
+	print chat_rooms
+	for join_id, conn in chat_rooms[room_ref].iteritems():
+		conn.send("CHAT:%s\nCLIENT_NAME:%s\nMESSAGE:%s\n\n" %(str(room_ref),user,message))
+
 class ChatRoom:
 
-	def __init__(self,name,host,port):
-		self.name = name
+	def __init__(self,host,port):
 		self.host = host
 		self.port = port
-		self.users_in_room = []
 
-	def join_chatroom(self,user,conn):
-		join_id = len(self.users_in_room)
-		room_ref = 1
-		if not user in self.users_in_room:
-			self.users_in_room.append(user)
-		print "%s has joined chatroom: %s." %(user,self.name)
-		conn.send("JOINED_CHATROOM:%s\nSERVER_IP:%s\nPORT:%d\nROOM_REF:%d\nJOIN_ID:%d\n\n"
-			%(self.name,self.host,self.port,room_ref,join_id))
-		message = ("%s has joined the chatroom." %(user))
-		conn.send("CHAT:%d\nCLIENT_NAME:%s\nMESSAGE:%s\n\n" %(room_ref,user,message))
+	def join_chatroom(self,name,user,chat_rooms,conn):
+		room_ref = hashlib.sha256(name).digest()
+		if room_ref not in chat_rooms:
+			chat_rooms[room_ref] = {}
 
-	def leave_chatroom(self,user,conn):
-		join_id = len(self.users_in_room)
-		room_ref = 1
-		if user in self.users_in_room:
-			self.users_in_room.remove(user)
-		print "%s has left chatroom: %s." %(user,self.name)
-		conn.send("LEFT_CHATROOM:%s\nJOIN_ID:%d\n\n" %(self.name,join_id))
+		join_id = hashlib.sha256(user).digest()
+		if join_id not in chat_rooms[room_ref]:
+			chat_rooms[room_ref][join_id] = conn
+			message = ("%s has joined the chatroom." %(user))
+			conn.send("JOINED_CHATROOM:%s\nSERVER_IP:%s\nPORT:%s\nROOM_REF:%s\nJOIN_ID:%s\n\n"
+				%(name,self.host,str(self.port),str(room_ref),str(join_id)))
+			message = ("%s has joined the chatroom." %(user))
+			broadcast(room_ref,join_id,user,chat_rooms,message,conn)
+
+	def leave_chatroom(self,user,chat_rooms,room_ref,join_id,conn):
+		print "%s has left the chatroom." %(user)
+		conn.send("LEFT_CHATROOM:%s\nJOIN_ID:%s\n\n" %(room_ref,str(join_id)))
 		message = ("%s has left the chatroom." %(user))
-		conn.send("CHAT:%d\nCLIENT_NAME:%s\nMESSAGE:%s\n\n" %(room_ref,user,message))
+		broadcast(room_ref,join_id,user,chat_rooms,message,conn)
+		del chat_rooms[room_ref][join_id]
 
 	def disconnect_user(self,user,conn):
 		print "%s has disconnected due to transmission error." %(user)
 		leave_chatroom(user,conn)
 
-	def send_message(self,room_ref,user,message,conn):
-		#if user in self.users_in_room:
-		conn.send("CHAT:%d\nCLIENT_NAME:%s\nMESSAGE:%s\n\n" %(room_ref,user,message))
-		print "%s: %s" %(user,message)
+	def send_message(self,room_ref,join_id,user,message,chat_rooms,conn):
+		conn.send("CHAT:%s\nCLIENT_NAME:%s\nMESSAGE:%s\n\n" %(str(room_ref),user,message))
+		message = ("%s: %s" %(user,message))
+		broadcast(room_ref,join_id,user,chat_rooms,message,conn)

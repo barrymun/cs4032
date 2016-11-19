@@ -11,7 +11,6 @@ chat_id = "room1"
 client_name = str(raw_input("Provide your nickname: "))
 join_id = 0
 room_ref = 1
-the_msg = "insert the message here"
 
 join_msg = ("JOIN_CHATROOM:%s\nCLIENT_IP:%s\nPORT:%d\nCLIENT_NAME:%s\n\n" %(chat_id,host,port,client_name))
 exit_msg = ("LEAVE_CHATROOM:%s\nJOIN_ID:%d\nCLIENT_NAME:%s\n\n" %(chat_id,join_id,client_name))
@@ -34,7 +33,7 @@ def main():
 	client_socket.send(chat_msg)
 	while not "CHAT" in client_socket.recv(2048):
 		print "Sending ..."
-	print "%s: %s" %(client_name,user_msg)  
+	print "%s: %s" %(client_name,the_msg)  
 	print "Message sent."
 
 	client_socket.send(exit_msg)
