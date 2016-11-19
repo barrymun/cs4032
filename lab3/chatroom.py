@@ -22,13 +22,13 @@ class ChatRoom:
 			message = ("%s has joined the chatroom." %(user))
 			conn.send("JOINED_CHATROOM:%s\nSERVER_IP:%s\nPORT:%s\nROOM_REF:%s\nJOIN_ID:%s\n\n"
 				%(name,self.host,str(self.port),str(room_ref),str(join_id)))
-			message = ("%s has joined the chatroom." %(user))
+			message = ("%s has joined this chatroom." %(user))
 			broadcast(room_ref,join_id,user,chat_rooms,message,conn)
 
 	def leave_chatroom(self,user,chat_rooms,room_ref,join_id,conn):
 		print "%s has left the chatroom." %(user)
 		conn.send("LEFT_CHATROOM:%s\nJOIN_ID:%s\n\n" %(room_ref,str(join_id)))
-		message = ("%s has left the chatroom." %(user))
+		message = ("%s has left this chatroom." %(user))
 		broadcast(room_ref,join_id,user,chat_rooms,message,conn)
 		del chat_rooms[room_ref][join_id]
 
