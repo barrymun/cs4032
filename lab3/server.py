@@ -28,14 +28,11 @@ server_socket.listen(5)
 def handleClientConnections(conn,address):
 	checkConnection = True
 	chat_id = "room1"
-	room_ref = 1
-	chat_room = ChatRoom(chat_id,room_ref,host,port)
+	chat_room = ChatRoom(chat_id,host,port)
 	
 	join_id = 0
-	err_code = 1337
-	
+	err_code = 1337	
 	err_desc = "error"
-	msg = "hello"
 
 	while checkConnection:
 		data = conn.recv(2048);
@@ -48,43 +45,33 @@ def handleClientConnections(conn,address):
 		elif "JOIN_CHATROOM" in data:
 			print data
 			split_data = data.split('\n')
-			val = split_data[3]
-			client_name = val.split(':',1)[-1]
+			client_name = split_data[3].split(':')[1]
 			chat_room.join_chatroom(client_name,conn)
 
 		elif "LEAVE_CHATROOM" in data:
 			print data
 			split_data = data.split('\n')
-			val = split_data[2]
-			client_name = val.split(':',1)[-1]
+			client_name = split_data[2].split(':')[1]
 			chat_room.leave_chatroom(client_name,conn)
 
 		elif "CHAT" in data:
 			print data
 			split_data = data.split('\n')
-			val = split_data[0]
-			ref = val.split(':',1)[-1]
-			rm_ref = int(ref)
-			split_data = data.split('\n')
-			val2 = split_data[2]
-			client_name = val2.split(':',1)[-1]
-			val3 = split_data[3]
-			msg = val3.split(':',1)[-1]
+			rm_ref = int(split_data[0].split(':')[1])
+			client_name = split_data[2].split(':')[1]
+			msg = split_data[3].split(':')[1]
 			chat_room.send_message(rm_ref,client_name,msg,conn)
 
 		elif "DISCONNECT" in data:
-			server_socket.close()
-			sys.exit(0)
+			checkConnection = False
 
 		elif "KILL_SERVICE" in data:
-			print "terminating now ..."
 			server_socket.close()
 			print "Socket closed, connection terminated"
-			sys.exit(0)
+			os.exit(1)
 
 		else:
-			print "Invalid message"
-			print data
+			print "ERROR"
 			break
 
 	activeConnection = False
