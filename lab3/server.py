@@ -14,8 +14,8 @@ activeConnection = True
 #array used to keep track of the threads
 threadPool = []
 
-host = 'localhost'
-#host = '134.226.32.10'
+#host = 'localhost'
+host = '134.226.32.10'
 port = 8220
 address = (host, port)
 student_id = "13327106"
@@ -28,6 +28,7 @@ server_socket.listen(5)
 def handleClientConnections(conn,address):
 	checkConnection = True
 	chat_id = "room1"
+	room_ref = 1
 	chat_room = ChatRoom(chat_id,host,port)
 	
 	join_id = 0
@@ -52,6 +53,8 @@ def handleClientConnections(conn,address):
 			split_data = data.split('\n')
 			client_name = split_data[3].split(':')[1]
 			chat_room.join_chatroom(client_name,conn)
+			message = ("%s has joined this chatroom." %(client_name))
+			#conn.send("CHAT:%d\nCLIENT_NAME:%s\nMESSAGE:%s\n\n" %(room_ref,client_name,message))
 
 		elif "LEAVE_CHATROOM" in data:
 			print data
@@ -72,6 +75,7 @@ def handleClientConnections(conn,address):
 
 		else:
 			print "ERROR"
+			print data
 			break
 
 	activeConnection = False

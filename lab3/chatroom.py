@@ -33,6 +33,6 @@ class ChatRoom:
 		leave_chatroom(user,conn)
 
 	def send_message(self,room_ref,user,message,conn):
-		if user in self.users_in_room:
-			conn.send("CHAT:%d\nCLIENT_NAME:%s\nMESSAGE:%s\n\n" %(room_ref,user,message))
+		#if user in self.users_in_room:
+		conn.send("CHAT:%d\nCLIENT_NAME:%s\nMESSAGE:%s\n\n" %(room_ref,user,message))
 		print "%s: %s" %(user,message)
