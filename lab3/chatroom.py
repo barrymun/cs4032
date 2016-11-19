@@ -44,5 +44,4 @@ class ChatRoom:
 
 	def send_message(self,room_ref,join_id,user,message,chat_rooms,conn):
 		message = ("%s: %s" %(user,message))
-		conn.send("CHAT:%s\nCLIENT_NAME:%s\nMESSAGE:%s\n\n" %(str(room_ref),user,message))
 		broadcast(room_ref,join_id,user,chat_rooms,message,conn)
