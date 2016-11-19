@@ -14,8 +14,8 @@ activeConnection = True
 #array used to keep track of the threads
 threadPool = []
 
-#host = 'localhost'
-host = '134.226.32.10'
+host = 'localhost'
+#host = '134.226.32.10'
 port = 8220
 address = (host, port)
 student_id = "13327106"
@@ -42,6 +42,11 @@ def handleClientConnections(conn,address):
 			print "message recieved, number of threads: %d" % (totalThreads)
 			conn.send("%sIP:%s\nPort:%d\nStudentID:%s" %(data,host,port,student_id))
 
+		elif "KILL_SERVICE" in data:
+			server_socket.close()
+			print "Socket closed, connection terminated"
+			os.exit(1)
+
 		elif "JOIN_CHATROOM" in data:
 			print data
 			split_data = data.split('\n')
@@ -64,11 +69,6 @@ def handleClientConnections(conn,address):
 
 		elif "DISCONNECT" in data:
 			checkConnection = False
-
-		elif "KILL_SERVICE" in data:
-			server_socket.close()
-			print "Socket closed, connection terminated"
-			os.exit(1)
 
 		else:
 			print "ERROR"

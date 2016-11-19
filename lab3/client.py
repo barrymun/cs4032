@@ -39,11 +39,11 @@ def main():
 	  	while "CHAT" in client_socket.recv(2048):
 		  	print "%s: %s" %(client_name,user_msg)
 		  	break
-		else:
-			client_socket.send(exit_msg)
-			while not "LEFT_CHATROOM" in client_socket.recv(2048):
-				print "Disconnecting . . ."
-			print "Successfully left chatroom: %s" %(chat_id)
+
+	client_socket.send(exit_msg)
+	while not "LEFT_CHATROOM" in client_socket.recv(2048):
+		print "Disconnecting . . ."
+	print "Successfully left chatroom: %s" %(chat_id)
 
 	print "Goodbye"
 	client_socket.close()
