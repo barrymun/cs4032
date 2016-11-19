@@ -1,8 +1,7 @@
 
-import hashlib
+from hashlib import md5
 
 def broadcast(room_ref,join_id,user,chat_rooms,message,conn):
-	print chat_rooms
 	for join_id, conn in chat_rooms[room_ref].iteritems():
 		conn.send("CHAT:%s\nCLIENT_NAME:%s\nMESSAGE:%s\n\n" %(str(room_ref),user,message))
 
@@ -13,11 +12,11 @@ class ChatRoom:
 		self.port = port
 
 	def join_chatroom(self,name,user,chat_rooms,conn):
-		room_ref = hashlib.sha256(name).digest()
+		room_ref = int(md5(name).hexdigest(), 16)
 		if room_ref not in chat_rooms:
 			chat_rooms[room_ref] = {}
 
-		join_id = hashlib.sha256(user).digest()
+		join_id = int(md5(user).hexdigest(), 16)
 		if join_id not in chat_rooms[room_ref]:
 			chat_rooms[room_ref][join_id] = conn
 			message = ("%s has joined the chatroom." %(user))
