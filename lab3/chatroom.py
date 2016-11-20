@@ -1,9 +1,7 @@
 
-from hashlib import md5
-
-def broadcast(room_ref,join_id,user,chat_rooms,message,conn):
+def broadcast_to_chat(room_ref,join_id,conn,chat_rooms,data):
 	for join_id, conn in chat_rooms[room_ref].iteritems():
-		conn.send("CHAT:%s\nCLIENT_NAME:%s\nMESSAGE:%s\n\n" %(str(room_ref),user,message))
+		conn.send(data)
 
 class ChatRoom:
 
@@ -11,37 +9,34 @@ class ChatRoom:
 		self.host = host
 		self.port = port
 
-	def join_chatroom(self,name,user,chat_rooms,conn):
-		room_ref = int(md5(name).hexdigest(), 16)
+	def join_chatroom(self,chat_rooms,room,client_name,room_ref,join_id,conn):
 		if room_ref not in chat_rooms:
 			chat_rooms[room_ref] = {}
-
-		join_id = int(md5(user).hexdigest(), 16)
 		if join_id not in chat_rooms[room_ref]:
 			chat_rooms[room_ref][join_id] = conn
-			message = ("%s has joined the chatroom." %(user))
-			conn.send("JOINED_CHATROOM:%s\nSERVER_IP:%s\nPORT:%s\nROOM_REF:%s\nJOIN_ID:%s\n\n"
-				%(name,self.host,str(self.port),str(room_ref),str(join_id)))
-			message = ("%s has joined this chatroom." %(user))
-			broadcast(room_ref,join_id,user,chat_rooms,message,conn)
+			conn.send("JOINED_CHATROOM:%s\nSERVER_IP:%s\nPORT:%s\nROOM_REF:%s\nJOIN_ID:%s\n"
+				%(str(room),self.host,self.port,str(room_ref),str(join_id)))
+			message = ("CHAT:%s\nCLIENT_NAME:%s\nMESSAGE:%s has joined this chatroom.\n\n" 
+				%(str(room_ref),str(client_name),str(client_name)))
+			broadcast_to_chat(room_ref,join_id,conn,chat_rooms,message)
 
-	def leave_chatroom(self,user,chat_rooms,room_ref,join_id,conn):
-		print "%s has left the chatroom." %(user)
-		conn.send("LEFT_CHATROOM:%s\nJOIN_ID:%s\n\n" %(room_ref,str(join_id)))
-		message = ("%s has left this chatroom." %(user))
-		broadcast(room_ref,join_id,user,chat_rooms,message,conn)
+	def leave_chatroom(self,chat_rooms,room_ref,join_id,client_name,conn):
+		conn.send("LEFT_CHATROOM:%s\nJOIN_ID:%s\n" %(str(room_ref),str(join_id)))
+		message = ("CHAT:%s\nCLIENT_NAME:%s\nMESSAGE:%s has left this chatroom.\n\n"
+			%(str(room_ref),str(client_name),str(client_name),))
+		broadcast_to_chat(room_ref,join_id,conn,chat_rooms,message)
 		del chat_rooms[room_ref][join_id]
 
-	def disconnect_user(self,user,chat_rooms,conn):
-		join_id = int(md5(user).hexdigest(), 16)
-		print "%s has disconnected due to transmission error." %(user)
+	def disconnect(self,chat_rooms,client_name,join_id,conn,activeConnection):
 		for room_ref in chat_rooms.keys():
 			if join_id in chat_rooms[room_ref]:
-				message = ("%s has left the chatroom." %(user))
-				broadcast(room_ref, message)
-				if join_id in chat_rooms[room_id]:
+				message = ("CHAT:%s:\nCLIENT_NAME:%s\nMESSAGE:%s has left this chatroom.\n\n"
+					%(str(room_ref),str(client_name),str(client_name)))
+				broadcast_to_chat(room_ref,join_id,conn,chat_rooms,message)
+				if join_id in chat_rooms[room_ref]:
 					del chat_rooms[room_ref][join_id]
+		activeConnection = False
 
-	def send_message(self,room_ref,join_id,user,message,chat_rooms,conn):
-		message = ("%s: %s" %(user,message))
-		broadcast(room_ref,join_id,user,chat_rooms,message,conn)
+	def send_message(self,chat_rooms,room_ref,join_id,client_name,msg,conn):
+		user_msg = ("CHAT:%s\nCLIENT_NAME:%s\nMESSAGE:%s\n\n" %(str(room_ref),str(client_name),msg))
+		broadcast_to_chat(room_ref,join_id,conn,chat_rooms,user_msg)
